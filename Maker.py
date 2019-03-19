@@ -15,20 +15,22 @@ except NameError:
     from sets import Set as set
 
 class Maker:
-    def __init__(self):
+    def __init__(self, maxacct):
         self.used = set()
-        self.cols = ['acct','credit_score','debt_income','total_bals_dep','total_bals_ln','products']
+        self.cols = ['acct','credit_score','debt_income','total_bals_dep','total_bals_ln']
+        for i in range(1,101):
+            self.cols.append('week{0}'.format(i))
         self.df = pd.DataFrame(data=[self.get_data()], columns=self.cols)
+        self.maxacct = maxacct
 
     def make_data(self):
-        while len(self.df['acct']) < 50000:
+        while len(self.df['acct']) < self.maxacct:
             newrow = pd.DataFrame(data=[self.get_data()], columns=self.cols)
             self.df = self.df.append(newrow, ignore_index=True)
 
         self.df.to_csv('../phonydatamaker/phonydata.csv', encoding='utf-8', index=False)
 
-    def get_products(self):
-        ret = []
+    def get_products(self, ret):
 
         for i in range(100):
             chance = random.random()
@@ -40,6 +42,7 @@ class Maker:
         return ret
 
     def get_data(self):
+        ret = []
         shbal = int(np.random.normal(-25,50000000,None))/100
         while shbal < 0:
             shbal = int(np.random.normal(-25,50000000,None))/100
@@ -53,7 +56,11 @@ class Maker:
             accnum = random.randint(1,999999)
 
         self.used.add(accnum)
-        return [accnum, int(random.triangular(330,830,687)), int(random.triangular(1,80,40))/100, shbal, lnbal, self.get_products()]
 
-mk = Maker()
+        ret = [accnum, int(random.triangular(330,830,687)), int(random.triangular(1,80,40))/100, shbal, lnbal]
+        ret = self.get_products(ret)
+
+        return ret
+
+mk = Maker(50000)
 mk.make_data()
