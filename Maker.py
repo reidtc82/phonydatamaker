@@ -17,7 +17,7 @@ except NameError:
 class Maker:
     def __init__(self, maxacct):
         self.used = set()
-        self.cols = ['acct','credit_score','debt_income','total_bals_dep','total_bals_ln']
+        self.cols = ['acct','credit_score','debt_income', 'profitability', 'total_bals_dep','total_bals_ln']
         for i in range(1,101):
             self.cols.append('week{0}'.format(i))
         self.df = pd.DataFrame(data=[self.get_data()], columns=self.cols)
@@ -57,7 +57,7 @@ class Maker:
 
         self.used.add(accnum)
 
-        ret = [accnum, int(random.triangular(330,830,687)), int(random.triangular(1,80,40))/100, shbal, lnbal]
+        ret = [accnum, int(random.triangular(330,830,687)), int(random.triangular(1,80,40))/100, int(random.triangular(-50000,1000000,50000))/100, shbal, lnbal]
         ret = self.get_products(ret)
 
         return ret
